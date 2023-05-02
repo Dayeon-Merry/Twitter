@@ -38,7 +38,7 @@ export async function create(text, name, username) {
         name,
         username
     };
-    tweets = [tweet, ...tweets]; 
+    tweets = [tweet, ...tweets];
     return tweets;
 }
 
