@@ -1,7 +1,6 @@
 import * as tweetRepository from '../data/tweet.js'
 
 
-
 export async function getTweets(req, res) {
     const username = req.query.username; // 값을 받아와서 저장
     const data = await (username
