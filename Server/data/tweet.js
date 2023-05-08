@@ -1,47 +1,57 @@
-import express from 'express'
+import express from 'express';
+import * as userRepository from './auth.js';
 
 let tweets = [
     {
-        id: '1',
+        // 트윗 정보
+        id: '1', // 트윗의 글 번호
         text: '첫 트윗입니다!!',
         createdAt: Date.now().toString(),
-        name: 'apple',
-        username: '김사과',
-        url: ''
+        // 사용자 정보: 계정을 만들어서 회원정보 수정할 경우, 계정 데이터와 트윗에 있는 데이터가 따로 논다. 
+        userId: '1' //계정의 identity한 번호.
     },
     {
         id: '2',
         text: '안녕하세요!!',
         createdAt: Date.now().toString(),
-        name: 'banana',
-        username: '반하나',
-        url: ''
+        userId: '1'
     }
 ];
+
 export async function getAll(){
-    return tweets;
+    return Promise.all(
+        tweets.map(async (tweet) => {
+            const {username, name, url} = await userRepository.findById(tweet.userId);
+            return {...tweet, username, name, url};
+        })
+    );
 }
 
 export async function getAllByUsername(username) {
-    return tweets.filter((tweet) => tweet.username === username)
+    return getAll().then((tweets) => tweets.filter((tweet) => tweet.username === username))
 }
 
 export async function getById(id) {
-    return tweets.find((tweet) => tweet.id === id)
+    const found = tweets.find((tweet) => tweet.id === id);
+    if(!found){
+        return null;
+    }
+    const { username, name, url } = await userRepository.findById(found.userId);
+    return {...found, username, name, url}; //객체로 묶어서 return
 }
 
-export async function create(text, name, username) {
+//트윗의 id를 뽑아서 확인하고 return 
+export async function create(text, userId) {
     const tweet = {
         id: Date.now().toString(),
         text,
         createdAt: new Date(),
-        name,
-        username
+        userId
     };
     tweets = [tweet, ...tweets];
-    return tweets;
+    return getById(tweet.id);
 }
-
+// 글을 쓴 사람인지 알아야하는게 우선이다.
 export async function update(id, text) {
     const tweet = tweets.find((tweet) => tweet.id === id);
     if(tweet){
