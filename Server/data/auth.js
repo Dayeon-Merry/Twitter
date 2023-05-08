@@ -10,20 +10,16 @@ let users = [
     }
 ];
 
-export async function findByUername(username) {
+export async function findByUsername(username) {
     return users.find((user) => user.username === username)
 }
 
+export async function createUser(user){
+    const created = {...user, id: Date.now().toString()}
+    users.push(created)
+    return created.id;
+}
 
-export async function create(username, password, name, email, url) {
-    const user = {
-        id: Date.now().toString(),
-        username,
-        password,
-        name,
-        email,
-        url
-    };
-    users = [user, ...users];
-    return users;
+export async function findById(id){
+    return users.find((user) => user.id === id);
 }

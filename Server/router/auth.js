@@ -1,18 +1,9 @@
-/*
-    회원가입 -> post, /signup
-    name: 빈문자X (notEmpty())
-    email: 이메일 형식 체크, 모두 소문자로 바꿔줘야함
-    url: URL체크(isURL())
-
-    로그인 -> post, /login
-    username: 공백X, 빈문자X(데이터가 없는것)
-    password: 공백 X, 최소 4자이상
-*/
-
 import express from 'express'
 // import * as tweetController from '../controller/tweet.js'
 import { body } from 'express-validator'
 import { validate } from "../middleware/validator.js";
+import * as authController from '../controller/auth.js';
+import { isAuth } from '../middleware/auth.js'
 
 const router = express.Router();
 
@@ -48,34 +39,34 @@ const validateSignup = [
 ]
 // 왜 하나로 쓰지 못할까? 객체로 다 받아와서 유효성 검사 함수를 적용하는데, 자바스크립트를 생각했을 때, 로그인 데이터를 가져왔는데 거기에 없는 객체에 대한 검사를 하게되서 오류가 난다.
 
-router.post('/signup', validateSignup, )
-router.post('/login', validateCredential, tweetController.createTweet)
-router.post('/me', )
+router.post('/signup', validateSignup, authController.signup)
+router.post('/login', validateCredential, authController.login)
+router.get('/me', isAuth, authController.me)
 
 export default router;
 
-const validateTweet = [
-    body('name')
-        .notEmpty()
-        .withMessage('name은 빈칸 또는 공백을 포함할 수 없습니다!!'),
-    body('email')
-        .trim()
-        .isEmail()
-        .normalizeEmail()
-        .withMessage('email 형식에 맞게 쓰세요!'),
-    body('url')
-        .trim()
-        .isURL()
-        .withMessage('URL 형식에 맞게 쓰세요!'),
-    body('username')
-        .notEmpty()
-        .withMessage('username은 빈칸 또는 공백을 포함할 수 없습니다!!'),
-    body('password')
-        .notEmpty()
-        .isLength({ min:4 })
-        .withMessage('password는 공백없이 최소 4자 이상 입력하세요!'),
-    validate
-]
+// const validateTweet = [
+//     body('name')
+//         .notEmpty()
+//         .withMessage('name은 빈칸 또는 공백을 포함할 수 없습니다!!'),
+//     body('email')
+//         .trim()
+//         .isEmail()
+//         .normalizeEmail()
+//         .withMessage('email 형식에 맞게 쓰세요!'),
+//     body('url')
+//         .trim()
+//         .isURL()
+//         .withMessage('URL 형식에 맞게 쓰세요!'),
+//     body('username')
+//         .notEmpty()
+//         .withMessage('username은 빈칸 또는 공백을 포함할 수 없습니다!!'),
+//     body('password')
+//         .notEmpty()
+//         .isLength({ min:4 })
+//         .withMessage('password는 공백없이 최소 4자 이상 입력하세요!'),
+//     validate
+// ]
 
 
 
