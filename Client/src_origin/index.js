@@ -9,15 +9,22 @@ import { AuthProvider } from './context/AuthContext';
 import { AuthErrorEventBus } from './context/AuthContext';
 import HttpClient from './network/http';
 import TokenStorage from './db/token';
-import Socket from './network/socket';
+import socket from 'socket.io-client';
 
+ // .env에서 읽어옴:  REACT_APP_BASE_URL=http://localhost:8080
 const baseURL = process.env.REACT_APP_BASE_URL;
-const tokenStorage = new TokenStorage();
+const tokenStorage = new TokenStorage()
 const httpClient = new HttpClient(baseURL);
 const authErrorEventBus = new AuthErrorEventBus();
 const authService = new AuthService(httpClient, tokenStorage);
-const socketClient = new Socket(baseURL, () => tokenStorage.getToken());
-const tweetService = new TweetService(httpClient, tokenStorage, socketClient);
+const tweetService = new TweetService(httpClient, tokenStorage);
+
+const socketIO = socket(baseURL)
+// 연결 실패시 에러 찍어줌
+socketIO.on('connect_error', (error) => {
+  console.log('소켓 에러!', error)
+})
+socketIO.on('dwitter', (msg) => console.log(msg));
 
 ReactDOM.render(
   <React.StrictMode>
