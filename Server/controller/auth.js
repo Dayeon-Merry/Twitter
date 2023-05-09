@@ -1,10 +1,8 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import * as userRepository from '../data/auth.js';
+import { config } from '../config.js'
 
-const jwtSecretKey = '4*MAOLE9ijD5#8wcxSUa43k#RszcRA'
-const jwtExpiresInDays = '2d';
-const bcryptSaltRounds = 10;
 
 // 핸들러들
 export async function signup(req, res) {
@@ -18,7 +16,7 @@ export async function signup(req, res) {
     if(found){
         return res.status(409).json({ message: `${username}은 이미 가입되었습니다!`})
     }
-    const hashed = await bcrypt.hash(password, bcryptSaltRounds)
+    const hashed = await bcrypt.hash(password, config.bcrypt.saltRounds)
     // hashSync를 왜 안쓰지? await면 비동기니까 Sync를 안쓴것.
     const userId = await userRepository.createUser({
         username,
@@ -59,5 +57,5 @@ export async function me(req, res, next) {
 }
 
 function createJwtToken(id) {
-    return jwt.sign({id}, jwtSecretKey, {expiresIn: jwtExpiresInDays})
+    return jwt.sign({id}, config.jwt.secretKey, {expiresIn: jwt.expiresInSec})
 }

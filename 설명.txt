@@ -80,3 +80,32 @@ body는 express-validator에서 제공하는 함수로, 요청 본문(body)에�
 Bearer
 json 스키마 값
 -Value 에 입력: Bearer 토큰값
+
+
+<0508 트윗 사용하기>
+1. 토큰을 사용해야하고, 토큰을 사용할 수 있도록 index.js에 가져와야 함(tokenStorage 추가)
+    const tweetService = new TweetService(httpClient, tokenStorage);
+
+2. Client - service - tweet.js로 가서 constructor 매개변수값으로 tokenStorage추가 및 this.tokenStorage = tokenStorage; 프로퍼티로 등록
+
+3. 토큰을 꺼낼 수 있게하는 함수만들기 -> fetch를 이용해서 API로 접근할 때 토큰을 이용할 수 있음(네트워크로 데이터를 보내고,받는 함수에 Headers에 넣어야 함)
+    ✔ 왜 headers에 토큰을 넣어야 하는가?
+    HTTP 요청을 보낼 때, 클라이언트와 서버 간의 인증 정보나 추가적인 데이터를 전달하기 위해 헤더를 사용합니다.
+    HTTP 헤더는 요청이나 응답의 메타데이터를 전달하는 데 사용되며, 클라이언트와 서버 간의 통신을 지원하는 핵심 요소 중 하나입니다.
+    인증을 위해 사용되는 토큰 정보는 주로 HTTP 요청의 Authorization 헤더에 포함됩니다. 
+    이를 통해 서버는 클라이언트의 인증 정보를 확인하고, 클라이언트는 서버에서 보호되는 자원에 접근할 수 있습니다. 
+    따라서 fetch 메서드로 서버에 요청을 보낼 때는, 인증을 위해 사용되는 토큰 정보를 HTTP 요청의 Authorization 헤더에 넣어서 보내야 합니다.
+
+<0508 트윗 수정/삭제_로그인 후 계정으로 작성한 트윗에 대해서만 수정/삭제 가능하도록>
+1. controller - tweets.js에서 updateTweet, deleteTweet 수정
+
+
+<0509>
+서버 포트넘버/시크릿키는 환경변수에 넣어놓고, 서버를 다시 시작할때마다 실행할 수 있도록 한다.(env파일에 대한 내용을 서버에 적용)
+    - env파일에 접근하기 위해서는 process.을 이용할 수 있지만, 상수값이 등록되지 않았거나 오타가 있는경우 프로그램을 짜서 
+    env파일을 사용하려고 하는게 dotenv다.
+    - npm i dorenv로 설치.
+    - config.js 파일을 만들어서 env파일을 import하여 코드를 짜야함.(env파일에 직접 코드를 짤 수 없다.)
+    - env 파일은 공유해서는 안됨
+
+config.js를 controller, middleware내 auth.js에 import하여 해당되는 값들을 config.jwt.키값 으로 바꿔준다
