@@ -57,5 +57,5 @@ export async function me(req, res, next) {
 }
 
 function createJwtToken(id) {
-    return jwt.sign({id}, config.jwt.secretKey, {expiresIn: jwt.expiresInSec})
+    return jwt.sign({id}, config.jwt.secretKey, {expiresIn: config.jwt.expiresInSec})
 }

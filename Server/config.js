@@ -8,6 +8,7 @@ function required(key, defaultValue = undefined) {
     if(value == null) {
         throw new Error(`Key ${key} is undefined`)
     }
+    return value
 }
 
 export const config = {
@@ -16,7 +17,7 @@ export const config = {
         expiresInSec: parseInt(required('JWT_EXPIRES_SEC', 86400))
         // 혹시라도 env 에 값이 없어도 작동할 기본값(86400)도 같이 넣음
     },
-    bycript: {
+    bcrypt: {
         saltRounds: parseInt(required('BCRYPT_SALT_ROUND', 12))
     },
     host: {

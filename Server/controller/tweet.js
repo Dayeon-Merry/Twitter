@@ -1,5 +1,6 @@
-import * as tweetRepository from '../data/tweet.js'
 
+import * as tweetRepository from '../data/tweet.js'
+import { getSocketIO } from '../connection/socket.js';
 
 export async function getTweets(req, res) {
     const username = req.query.username; // 값을 받아와서 저장
@@ -24,6 +25,7 @@ export async function createTweet(req, res, next) {
     const tweet = await tweetRepository.create(text, req.userId)
     // 배열을 만들고 복사로 추가 (메모리에있는 객체를 복사해오고, tweet을 저장해놓고 가리키게 함, 새로운걸 하나 만들어서 옮기는 것)
     res.status(201).json(tweet);
+    getSocketIO().emit('tweets', tweet);
 }
 
 // 수정 전
