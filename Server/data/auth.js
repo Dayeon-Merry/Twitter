@@ -1,25 +1,15 @@
-// abcd1234: 
-let users = [
-    {
-        id: '1',
-        username: 'melon',
-        password: '$2b$10$6ZJ3wj51qEgEbXm1PPGl8OZsjNVHBj57o93BcfaePjSji4jX6v/wu',
-        name: '이메론',
-        email: 'melon@email.com',
-        url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS87Gr4eFO7Pt2pE8oym4dxXnxGZYL2Pl_N5A&usqp=CAU'
-    }
-];
+import { db } from '../db/database.js';
 
 export async function findByUsername(username) {
-    return users.find((user) => user.username === username)
+    return db.execute('select * from users where username=?', [username]).then((result) => result[0][0]);
 }
 
 export async function createUser(user){
-    const created = {...user, id: Date.now().toString()}
-    users.push(created)
-    return created.id;
+    const {username, password, name, email, url } = user;
+    return db.execute('insert into users(username, password, name, email, url) values (?, ?, ?, ?, ?)', [username, password, name, email, url]).then((result) => console.log(result[0].insertId));
 }
 
 export async function findById(id){
-    return users.find((user) => user.id === id);
+    console.log("들어옴 findById");
+    return db.execute('select id from users where id=?', [id]).then((result) => result[0][0]);
 }
