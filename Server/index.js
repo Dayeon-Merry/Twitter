@@ -5,7 +5,8 @@ import tweetsRouter from './router/tweets.js'
 import authRouter from './router/auth.js'
 import { config } from './config.js';
 import { initSocket } from './connection/socket.js'
-import { db } from './db/database.js'
+import { sequelize } from './db/database.js'
+// import { db } from './db/database.js'
 
 const app = express()
 app.use(express.json())
@@ -26,9 +27,15 @@ app.use((error, req, res, next) => {
 });
 
 // db.getConnection().then((connection) => console.log(connection))
+// 연결확인을 위한 출력하는 부분은 주석처리하고, 서버를 sequelize 안으로 이동
+sequelize.sync().then(() => {
+    // console.log(client)
+    const server = app.listen(config.host.port);
+    initSocket(server);
+})
 
-const server = app.listen(config.host.port);
-initSocket(server);
+
+
 
 //소켓은 이벤트 기반으로 움직인다. 사용자가 이벤트를 발생시키면 그 이벤트에 의해 처리가 됨
 // .on()은 어떤 이벤트가 발생하면 비동기처리 함수를 작동시킨다. 'connection'은 사용자가 연결될때 함수를 처리.

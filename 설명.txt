@@ -222,5 +222,31 @@ RDBMS(관계형 데이터 베이스): 나누거나 합칠 수 있는 DB
     - let 변수로 직접 넣은 정보를 삭제하고, import { db } from '../db/database.js';로 데이터베이스를 import.
     - create(text, userId)는 insert문으로 text, createdAt, userId를 테이블에 추가하는데, [text, new Date(), userId]값으로 넣는다.
 
-- controller - tweet.js도 db 연동되게 코드 수정하기
     
+<0511>
+ORM(Object Relational Mapping)
+- 내부적으로 쿼리를 만들어준다.
+- sql보다 느리다.
+- 복잡한 쿼리는 만들기 쉽지 않다.
+- 개발 시 ORM을 사용하는 것이 개발자에게 익숙하고, 코드에 SQL문이 들어가는것보다 가독성이 좋을 수 있다.
+- orm에서 지원하는 sql쿼리를 넣을 수 있다.
+
+Sequlize (ORM tool)
+- 설치: npm install sequelize
+- db - database.js
+    - mysql2 import한 코드 삭제해도 되고, import SQ from 'sequelize';추가.
+    - 아래 코드 추가
+    const { host, user, database, password } = config.db;
+    export const sequelize = new SQ.Sequelize(database, user, password, {
+        host,
+        dialect: 'mysql',
+        logging: false
+    })
+
+- index.js
+    - import { sequelize } from './db/database.js'
+    - sequelize.sync().then((client) => {
+    console.log(client)
+})
+
+-  data 폴더 내 파일들에서 import { db } from './db/database.js'다 지우기
