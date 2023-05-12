@@ -250,3 +250,7 @@ Sequlize (ORM tool)
 })
 
 -  data 폴더 내 파일들에서 import { db } from './db/database.js'다 지우기
+
+
+<0512>
+mongoDB

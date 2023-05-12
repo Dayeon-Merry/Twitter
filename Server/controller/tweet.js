@@ -20,6 +20,7 @@ export async function getTweet(req, res) {
 }
 // body에서 text만 가져오면 됨, create메서드에 text와 req.userId를 넣음.
 export async function createTweet(req, res, next) {
+    console.log(req.userId); 
     const { text } = req.body;
     //body에서 입력받은 값을 불러와서 변수에 넣겠다.
     const tweet = await tweetRepository.create(text, req.userId)
@@ -47,8 +48,6 @@ export async function updateTweet(req, res, next) {
     if(!tweet){
         res.status(404).json({message: `Tweet id(${id}) not found`}) //id가 없으면 없다고 return
     }
-    console.log(tweet.userId);
-    console.log(req.userId);
     if(tweet.userId !== req.userId){
         return res.sendStatus(403) // 작성한 userID와 요청(접속)한 userId가 같지않으면 수정하지 못하도록.
     }
@@ -63,7 +62,7 @@ export async function deleteTweet(req, res, next) {
     if(!tweet){
         res.status(404).json({message: `Tweet id(${id}) not found`}) //id가 없으면 없다고 return
     }
-    if(tweet.userid !== req.userId){
+    if(tweet.userId !== req.userId){
         return res.sendStatus(403) // 작성한 userID와 요청(접속)한 userId가 같지않으면 수정하지 못하도록.
     }
     await tweetRepository.remove(id);

@@ -1,62 +1,37 @@
-// import { db } from '../db/database.js';
-import SQ from 'sequelize';
-import { sequelize } from '../db/database.js';
-// 테이블이 db에 있으면 냅두고 없으면 새로 만들도록 해야함.
-// 서버를 다시 킬때마다 테이블을 새로 만들면 기존 데이터가 날라가니까..
+import { getUsers } from '../db/database.js';
+import MongoDb from 'mongodb';
 
-// DataTypes: 데이터 타입을 결정해주는 prop
-const DataTypes = SQ.DataTypes; 
+// 데이터가 추가될때마다 객체가 저장되듯 저장됨
+const ObjectId = MongoDb.ObjectId;
+// PK나 유니크 제한조건이 없기 때무넹 동일한 컬럼이 들어갈수도있는데, 삭제하게되면 중복된 값들이 다 삭제된다.
 
-// 몽고DB와 비슷한 부분이 있다. 테이블이름에 s자가 무조건 자동으로 추가된다. 코드에서는 s를 빼고 써야함.
-// User라는 객체는 테이블이다.
-export const User = sequelize.define(
-    'user',
-    {
-        id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            allowNull: false,
-            primaryKey: true
-        },
-        username: {
-            type: DataTypes.STRING(45),
-            allowNull: false
-        },
-        password: {
-            type: DataTypes.STRING(128),
-            allowNull: false
-        },
-        name: {
-            type: DataTypes.STRING(45),
-            allowNull: false
-        },
-        email: {
-            type: DataTypes.STRING(128),
-            allowNull: false
-        },
-        url: DataTypes.TEXT,
-        regdate: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW
-        }
-        // regdate: 날짜타입, 현재시간을 자동으로 출력
-    },
-    { timestamps: false } 
-    // timestamps: false는 날짜를 datatime 형태로하기 위함.
-)
 //findOne(WHERE 조건)은 딱하나만 찾을때. 
 export async function findByUsername(username) {
-    return User.findOne({ where: { username }});
-    // username필드에서 받아온 username과 같은것을 찾아오라는 의미
+    return getUsers().find({username})
+    .next() // 직전 코드가 처리되면 then을 처리하고 아니면 then을 처리하지 않기 위함
+    .then(mapOptionalUser)
+
 }
 
 export async function createUser(user){
-    return User.create(user).then((data) => data.dataValues.id);
-    // user의 형태를 알고있고, 받은 data를 dataValues의 id로 넣게됨
+
+    return getUsers().insertOne(user)
+    .then((result) => {
+        console.log(result);
+        // result.ops[0]._id.toString()
+    })
+    //.insertOne() 데이터를 하나만 집어넣겠다.
+    // 객체형태를 받아서 그대로 집어넣음
 }
 
 export async function findById(id){
-    console.log("들어옴 findById");
-    return User.findByPk(id) // PK가 id라서, findByPk를 쓸수도 있음
-    // return User.findOne({ where: { id }});
+    console.log(id.length)
+    return getUsers()
+    .find({ _id: new ObjectId(id)})
+    .next()
+    .then(mapOptionalUser)
 }
+// 유저 객체가 있으면 스트링으로 리턴
+function mapOptionalUser(user) {
+    return user? { ...user, id: user._id.toString() } : user;
+} // _id는 object id
