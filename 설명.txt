@@ -253,4 +253,16 @@ Sequlize (ORM tool)
 
 
 <0512>
-mongoDB
+mongoosejs
+- https://mongoosejs.com/docs/guides.html
+
+배포를 위한 호스팅
+- PC를 대여해서 서비스.
+- 서버 호스팅(커스텀가능)/일반호스팅(닷홈)
+    ✔ 일반 호스팅: apach 서버 / dbms는 mysql / php 웹 프로그래밍언어 
+        - 닷홈은 nodejs로 올린게 안돌아감
+    ✔서버 호스팅: 내 마음대로 쓸 수 있다. 
+        - AWS, googledrive..
+        
+- 무료: 히로쿠/넬리파이/플랫폼..
+

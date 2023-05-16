@@ -31,11 +31,11 @@ app.use((error, req, res, next) => {
 
 connectDB()
     .then(() => {
-    const server = app.listen(config.host.port);
-    initSocket(server)})
+        console.log('연결되었습니다!')
+        const server = app.listen(config.host.port);
+        initSocket(server)
+    })
     .catch(console.error)
-
-
 
 //소켓은 이벤트 기반으로 움직인다. 사용자가 이벤트를 발생시키면 그 이벤트에 의해 처리가 됨
 // .on()은 어떤 이벤트가 발생하면 비동기처리 함수를 작동시킨다. 'connection'은 사용자가 연결될때 함수를 처리.
@@ -43,7 +43,7 @@ connectDB()
 // socketIO.on('connection', ()=>{
 //     console.log('클라이언트 연결 성공!');
 //     socketIO.emit('dwitter', 'Hello 🍊');
-// }) 
+// })
 
 // setInterval(() => {
 //     socketIO.emit('dwitter', 'Hello ❤❤🧡🧡')

@@ -1,10 +1,17 @@
 import { config } from '../config.js';
-import MongoDb from 'mongodb';
+import Mongoose from 'mongoose';
 
-let db;
 export async function connectDB(){
-    return MongoDb.MongoClient.connect(config.db.host)
-    .then((client) => {db = client.db()});
+    return Mongoose.connect(config.db.host);
+}
+// virtual(): 가상 필드 역할을 함 
+export function useVirtualId(schema){
+    schema.virtual('id').get(function() {
+        return this._id.toString();
+    })
+    schema.set('toJSON', { vertuals: true }); // JSON으로 내보냄
+    schema.set('toObject', { vertuals: true }); // 데이터를 Object로 다루겠다
+
 }
 
 // 몽고 DB는 테이블이라는 개념이 없다. 테이블과 유사하지만 데이터를 저장하는 묶음(컬렉션)이 있다. 나누라고 있는게 아니고, 데이터를 묶어주는 역할을 하라고 있는 것.

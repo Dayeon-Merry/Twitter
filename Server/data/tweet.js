@@ -1,75 +1,52 @@
-import MongoDb from 'mongodb'; 
-// import { getTweet } from '../controller/tweet.js';
-import { getTweets } from '../db/database.js'
+import Mongoose from 'mongoose'; 
+import { useVirtualId } from '../db/database.js'
 import * as UserRepository from './auth.js'
 
-const ObjectId = MongoDb.ObjectId
+const tweetSchema = new Mongoose.Schema({
+    text: { type:String, required: true},
+    userId: { type:String, required: true},
+    name: { type:String, required: true},
+    username: { type:String, required: true},
+    url: String
+},
+{ timestamps: true }) //두개의 timestamp 추가됨
+
+useVirtualId(tweetSchema);
+const Tweet = Mongoose.model('Tweet', tweetSchema);
 
 // RDMS와 nosequel과 차이점.. 스키마 유무,,,
 // nosequel도 스키마를 relational하게 만들 수 있는 방법이 있다..하지만 굳이 본연의 특징을 죽여가면서 쓸 필요가 없다. RDBMS 기능이 필요하다면 DBMS 서버를 여러개 두고 필요에 맞게 쓰면됨
 
-
-
-
 export async function getAll(){
-    return getTweets()
-    .find()
-    .sort({ createdAt: -1 })
-    .toArray()
-    .then(mapTweets)
-    // createdAt: -1 내림차순
-    // 배열로 바꿔줄 필요가 있음 = .toArray()
+    return Tweet.findOne().sort({ createAt: -1 });
 }
-
-
+// createAt: -1 : 내림차순
 export async function getAllByUsername(username) {
-    return getTweets()
-    .find({username})
-    .sort({ createdAt: -1 })
-    .toArray()
-    .then(mapTweets)
+    return Tweet.find({ username}).sort({ createAt: -1 });
 }
 
 export async function getById(id) {
-    return getTweets()
-    .find({ _id: new ObjectId(id) })
-    .next()
-    .then(mapOptionalTweet)
+    return Tweet.findById(id);
 }
 
 
 //트윗의 id를 뽑아서 확인하고 return 
 export async function create(text, userId) {
     return UserRepository.findById(userId)
-    .then((user) => getTweets().insertOne({
+    .then((user) => new Tweet({
         text,
-        createdAt: new Date(),
         userId,
         name: user.name,
         username: user.username,
-        url: user.url
-        // 매번 사용자 정보(user.객체 내 정보)를 트윗에 같이 저장
-    })).then((result) => console.log(result)).then(mapOptionalTweet)
+    }).save()
+    )
 }
 
 export async function update(id, text) {
-    return getTweets().findOndAndUpdate(
-        {_id: new ObjectId(id) },
-        { $set: { text } },
-        { returnOriginal: false}
-    )
-    .then((result)=> result.value)
-    .then(mapOptionalTweet)
+    return Tweet.findByIdAndUpdate(id, { text }, { returnOriginal: false })
 }
-
+//returnOriginal: false  - 원래 데이터를 보여줄 필요 없다.
 export async function remove(id) {
-    return getTweets().deleteOne({ _id: new ObjectId(id)})
+    return Tweet.findByIdAndDelete(id)
 }
 
-function mapOptionalTweet(tweet){
-    return tweet ? { ...tweet, id: tweet._id.toString()} : tweet;
-}
-
-function mapTweets(tweets) {
-    return tweets.map(mapOptionalTweet)
-}
